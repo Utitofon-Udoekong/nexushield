@@ -1,44 +1,57 @@
+"use client"
+
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { createClient } from "@/app/utils/supabase/client"
-import { Github, Mail } from "lucide-react"
+import { Icon } from "@iconify/react";
 import Link from "next/link"
-import { redirect } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function LoginPage() {
-  const loginWithEmail = async (formData: FormData) => {
-    "use server"
-    
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
-    const supabase = createClient()
+  const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError("")
+
+    const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
     if (error) {
-      return redirect("/auth/login?error=" + error.message)
+      setError(error.message)
+      setLoading(false)
+      return
     }
 
-    return redirect("/dashboard")
+    router.push("/dashboard")
   }
 
-  const loginWithGoogle = async () => {
-    "use server"
-    
+  const handleGoogleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError("")
+
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/callback`,
       },
     })
 
     if (error) {
-      return redirect("/auth/login?error=" + error.message)
+      setError(error.message)
+      setLoading(false)
     }
   }
 
@@ -55,15 +68,22 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {error && (
+          <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+
         <div className="grid gap-6">
-          <form action={loginWithEmail} className="space-y-4">
+          <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
-                name="email"
                 type="email"
                 placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -71,22 +91,15 @@ export default function LoginPage() {
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
-                name="password"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
-            <div className="flex items-center justify-end">
-              <Link
-                href="/auth/forgot-password"
-                className="text-sm text-primary hover:underline"
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <Button type="submit" className="w-full">
-              <Mail className="mr-2 h-4 w-4" />
-              Sign in with Email
+            <Button type="submit" className="w-full" disabled={loading}>
+              <Icon icon="mdi-light:email" className="mr-2 size-4" />
+              {loading ? "Signing in..." : "Sign in with Email"}
             </Button>
           </form>
 
@@ -101,12 +114,18 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <form action={loginWithGoogle}>
-            <Button type="submit" variant="outline" className="w-full">
-              <Github className="mr-2 h-4 w-4" />
-              Sign in with Google
+          <form onSubmit={handleGoogleLogin}>
+            <Button type="submit" variant="outline" className="w-full" disabled={loading}>
+              <Icon icon="mdi:google" className="mr-2 size-4" />
+              {loading ? "Signing in..." : "Sign in with Google"}
             </Button>
           </form>
+
+          <p className="text-center text-sm text-muted-foreground">
+            <Link href="/auth/forgot-password" className="text-primary hover:underline">
+              Forgot your password?
+            </Link>
+          </p>
         </div>
       </div>
     </div>

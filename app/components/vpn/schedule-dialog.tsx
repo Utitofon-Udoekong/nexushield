@@ -5,11 +5,10 @@ import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { Switch } from "@/app/components/ui/switch"
-import { Plus, Clock } from "lucide-react"
 import { toast } from "@/app/hooks/use-toast"
 import { scheduleConnection } from "@/app/lib/tpn"
 import { CountrySelector } from "@/app/components/vpn/country-selector"
-
+import { Icon } from "@iconify/react"
 interface ScheduleDialogProps {
   onScheduleCreated: () => void
   editSchedule?: {
@@ -71,9 +70,9 @@ export function ScheduleDialog({ onScheduleCreated, editSchedule }: ScheduleDial
       <DialogTrigger asChild>
         <Button>
           {editSchedule ? (
-            <Clock className="mr-2 h-4 w-4" />
+            <Icon icon="lucide:clock" className="mr-2 size-4" />
           ) : (
-            <Plus className="mr-2 h-4 w-4" />
+            <Icon icon="lucide:plus" className="mr-2 size-4" />
           )}
           {editSchedule ? "Edit Schedule" : "New Schedule"}
         </Button>

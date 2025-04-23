@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { formatBytes, formatDuration, formatLatency } from "@/app/lib/utils"
-import { Activity, Clock, Download, Upload, Wifi, WifiOff } from "lucide-react"
+import { Icon } from "@iconify/react"
 import { useVPN } from "@/app/components/providers/vpn-provider"
 
 export function VPNStats() {
@@ -22,7 +22,7 @@ export function VPNStats() {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
-              <Activity className="h-4 w-4 text-muted-foreground" />
+              <Icon icon="lucide:activity" className="size-4 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">Latency</p>
             </div>
             <p className="text-2xl font-bold">{formatLatency(metrics.latency)}</p>
@@ -30,7 +30,7 @@ export function VPNStats() {
 
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <Icon icon="lucide:clock" className="size-4 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">Uptime</p>
             </div>
             <p className="text-2xl font-bold">{formatDuration(currentConnection.uptime)}</p>
@@ -38,7 +38,7 @@ export function VPNStats() {
 
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
-              <Download className="h-4 w-4 text-muted-foreground" />
+              <Icon icon="lucide:download" className="size-4 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">Download Speed</p>
             </div>
             <p className="text-2xl font-bold">{formatBytes(metrics.download_speed)}/s</p>
@@ -46,7 +46,7 @@ export function VPNStats() {
 
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
-              <Upload className="h-4 w-4 text-muted-foreground" />
+              <Icon icon="lucide:upload" className="size-4 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">Upload Speed</p>
             </div>
             <p className="text-2xl font-bold">{formatBytes(metrics.upload_speed)}/s</p>
@@ -55,9 +55,9 @@ export function VPNStats() {
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
               {metrics.packet_loss > 0 ? (
-                <WifiOff className="h-4 w-4 text-muted-foreground" />
+                <Icon icon="lucide:wifi-off" className="size-4 text-muted-foreground" />
               ) : (
-                <Wifi className="h-4 w-4 text-muted-foreground" />
+                <Icon icon="lucide:wifi" className="size-4 text-muted-foreground" />
               )}
               <p className="text-sm text-muted-foreground">Packet Loss</p>
             </div>
@@ -66,7 +66,7 @@ export function VPNStats() {
 
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <Icon icon="lucide:clock" className="size-4 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">Time Remaining</p>
             </div>
             <p className="text-2xl font-bold">{timeLeftMinutes} min</p>

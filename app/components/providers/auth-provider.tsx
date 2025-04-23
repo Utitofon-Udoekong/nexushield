@@ -1,27 +1,19 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
-import { Database } from "@/app/types/supabase";
-
-type SupabaseClient = ReturnType<typeof createClientComponentClient<Database>>;
-
-interface AuthContextType {
-  supabase: SupabaseClient;
-  session: any;
-  user: any;
-  loading: boolean;
-}
+import { createClient } from "@/app/utils/supabase/client";
+import { AuthContextType } from "@/app/types";
+import { Session } from "@supabase/supabase-js";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const supabase = createClientComponentClient<Database>();
+  const supabase = createClient();
 
   useEffect(() => {
     const {
@@ -38,8 +30,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [supabase, router]);
 
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    router.refresh();
+  };
+
   return (
-    <AuthContext.Provider value={{ supabase, session, user, loading }}>
+    <AuthContext.Provider value={{ supabase, session, user, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   );

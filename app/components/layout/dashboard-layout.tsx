@@ -1,14 +1,7 @@
 import { ReactNode } from "react";
 import { cn } from "@/app/lib/utils";
 import { Button } from "@/app/components/ui/button";
-import { 
-  Shield, 
-  Globe, 
-  Clock, 
-  Activity, 
-  Settings, 
-  LogOut 
-} from "lucide-react";
+import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -17,11 +10,11 @@ interface DashboardLayoutProps {
 }
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: Shield },
-  { name: "VPN Status", href: "/dashboard/vpn", icon: Globe },
-  { name: "Schedules", href: "/dashboard/schedules", icon: Clock },
-  { name: "Metrics", href: "/dashboard/metrics", icon: Activity },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "Dashboard", href: "/dashboard", icon: "lucide:shield" },
+  { name: "VPN Status", href: "/dashboard/vpn", icon: "lucide:globe" },
+  { name: "Schedules", href: "/dashboard/schedules", icon: "lucide:calendar" },
+  { name: "Metrics", href: "/dashboard/metrics", icon: "lucide:activity" },
+  { name: "Settings", href: "/dashboard/settings", icon: "mdi-light:settings" },
 ];
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -34,7 +27,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex flex-col w-64">
           <div className="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
             <div className="flex items-center flex-shrink-0 px-4">
-              <Shield className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+              <Icon icon="mdi-light:shield" className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
               <span className="ml-2 text-xl font-semibold text-gray-900 dark:text-white">
                 NexusShield
               </span>
@@ -54,8 +47,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                           : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                       )}
                     >
-                      <item.icon
-                        className={cn(
+                      <Icon icon={item.icon} className={cn(
                           "mr-3 h-5 w-5",
                           isActive
                             ? "text-indigo-600 dark:text-indigo-300"
@@ -73,7 +65,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 variant="ghost"
                 className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
               >
-                <LogOut className="mr-3 h-5 w-5" />
+                <Icon icon="mdi-light:logout" className="mr-3 h-5 w-5" />
                 Sign out
               </Button>
             </div>

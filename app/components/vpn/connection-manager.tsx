@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/app/components/ui/button"
-import { Power, Globe } from "lucide-react"
+import { Icon } from "@iconify/react"
 import { CountrySelector } from "@/app/components/vpn/country-selector"
 import { connectVPN, disconnectVPN, getVPNStatus, VPNConnection } from "@/app/lib/tpn"
 import { toast } from "@/app/hooks/use-toast"
@@ -85,7 +85,7 @@ export function ConnectionManager({ onStatusChange }: ConnectionManagerProps) {
         onClick={handleDisconnect}
         disabled={isDisconnecting}
       >
-        <Power className="mr-2 h-4 w-4" />
+        <Icon icon="mdi:power" className="mr-2 size-4" />
         {isDisconnecting ? "Disconnecting..." : "Disconnect"}
       </Button>
 

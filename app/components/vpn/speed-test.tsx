@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/app/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
-import { Loader2 } from "lucide-react"
+import { Icon } from "@iconify/react"
 import { toast } from "@/app/hooks/use-toast"
 import { useVPN } from "@/app/components/providers/vpn-provider"
 import { createClient } from "@/app/utils/supabase/client"
@@ -27,7 +27,7 @@ interface SpeedTestResults {
   }
 }
 
-export function SpeedTestComponent() {
+export function SpeedTest() {
   const [isRunning, setIsRunning] = useState(false)
   const [results, setResults] = useState<SpeedTestResults | null>(null)
   const [speedTest, setSpeedTest] = useState<ST.default | null>(null)
@@ -174,7 +174,7 @@ export function SpeedTestComponent() {
           >
             {isRunning ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Icon icon="lucide:loader" className="mr-2 size-4 animate-spin" />
                 Running Speed Test...
               </>
             ) : (

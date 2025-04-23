@@ -1,26 +1,37 @@
+"use client"
+
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { createClient } from "@/app/utils/supabase/client"
-import { Mail } from "lucide-react"
+import { Icon } from "@iconify/react";
 import Link from "next/link"
-import { redirect } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function ForgotPasswordPage() {
-  const resetPassword = async (formData: FormData) => {
-    "use server"
-    
-    const email = formData.get("email") as string
-    const supabase = createClient()
+  const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError("")
+
+    const supabase = createClient()
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password`,
     })
 
     if (error) {
-      return redirect("/auth/forgot-password?error=" + error.message)
+      setError(error.message)
+      setLoading(false)
+      return
     }
 
+    // router.push("/auth/forgot-password/sent")
   }
 
   return (
@@ -29,25 +40,31 @@ export default function ForgotPasswordPage() {
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">Reset your password</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Enter your email address and we'll send you a link to reset your
-            password.
+            Enter your email address and we'll send you a link to reset your password.
           </p>
         </div>
 
-        <form action={resetPassword} className="space-y-4">
+        {error && (
+          <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleResetPassword} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
-              name="email"
               type="email"
               placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <Button type="submit" className="w-full">
-            <Mail className="mr-2 h-4 w-4" />
-            Send reset link
+          <Button type="submit" className="w-full" disabled={loading}>
+            <Icon icon="mdi-light:email" className="mr-2 size-4" />
+            {loading ? "Sending reset link..." : "Send reset link"}
           </Button>
         </form>
 

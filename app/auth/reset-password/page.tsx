@@ -1,26 +1,36 @@
+"use client"
+
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { createClient } from "@/app/utils/supabase/client"
-import { Lock } from "lucide-react"
-import { redirect } from "next/navigation"
+import { Icon } from "@iconify/react";
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function ResetPasswordPage() {
-  const updatePassword = async (formData: FormData) => {
-    "use server"
-    
-    const password = formData.get("password") as string
-    const supabase = createClient()
+  const router = useRouter()
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError("")
+
+    const supabase = createClient()
     const { error } = await supabase.auth.updateUser({
-      password: password,
+      password,
     })
 
     if (error) {
-      return redirect("/auth/reset-password?error=" + error.message)
+      setError(error.message)
+      setLoading(false)
+      return
     }
 
-    return redirect("/auth/login?message=Password updated successfully")
+    router.push("/auth/login?message=Password updated successfully")
   }
 
   return (
@@ -33,20 +43,26 @@ export default function ResetPasswordPage() {
           </p>
         </div>
 
-        <form action={updatePassword} className="space-y-4">
+        {error && (
+          <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleUpdatePassword} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="password">New Password</Label>
             <Input
               id="password"
-              name="password"
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={6}
             />
           </div>
-          <Button type="submit" className="w-full">
-            <Lock className="mr-2 h-4 w-4" />
-            Update Password
+          <Button type="submit" className="w-full" disabled={loading}>
+            <Icon icon="mdi-light:lock" className="mr-2 size-4" />
+            {loading ? "Updating password..." : "Update Password"}
           </Button>
         </form>
       </div>

@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/app/components/providers/theme-provider";
 import { Toaster } from "@/app/components/ui/toaster";
 import { QueryProvider } from "@/app/components/providers/query-provider";
 import { AuthProvider } from "@/app/components/providers/auth-provider";
+import { VPNProvider } from "@/app/components/providers/vpn-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,8 +30,10 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              {children}
-              <Toaster />
+              <VPNProvider>
+                {children}
+                <Toaster />
+              </VPNProvider>
             </ThemeProvider>
           </AuthProvider>
         </QueryProvider>

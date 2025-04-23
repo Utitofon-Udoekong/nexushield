@@ -18,7 +18,7 @@ export function ScheduleDialog({ open, onOpenChange, schedule }: ScheduleDialogP
   const [country, setCountry] = useState(schedule?.country_code || "");
   const [startTime, setStartTime] = useState(schedule?.start_time || "");
   const [endTime, setEndTime] = useState(schedule?.end_time || "");
-  const [days, setDays] = useState<number[]>(schedule?.days_of_week || []);
+  const [days, setDays] = useState<number[]>(schedule?.repeat_days || []);
 
   const handleSubmit = async () => {
     try {
@@ -27,7 +27,7 @@ export function ScheduleDialog({ open, onOpenChange, schedule }: ScheduleDialogP
           country_code: country,
           start_time: startTime,
           end_time: endTime,
-          days_of_week: days,
+          repeat_days: days,
         });
         toast({
           title: "Schedule updated",

@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/app/components/layout/dashboard-layout";
 import { Button } from "@/app/components/ui/button";
-import { Globe, Power, Clock } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { getVPNStatus, VPNConnection } from "@/app/lib/tpn";
 import { createClient } from "@/app/utils/supabase/client";
 import { redirect } from "next/navigation";
@@ -24,18 +24,18 @@ export default async function DashboardPage() {
           </h1>
           <div className="flex space-x-3">
             <Button variant="outline" size="sm">
-              <Clock className="mr-2 h-4 w-4" />
+              <Icon icon="lucide:clock" className="mr-2 size-4" />
               Schedule VPN
             </Button>
             <Button variant="outline" size="sm">
-              <Globe className="mr-2 h-4 w-4" />
+              <Icon icon="lucide:globe" className="mr-2 size-4" />
               Change Location
             </Button>
             <Button
               variant={vpnStatus?.connected ? "destructive" : "default"}
               size="sm"
             >
-              <Power className="mr-2 h-4 w-4" />
+              <Icon icon="lucide:power" className="mr-2 size-4" />
               {vpnStatus?.connected ? "Disconnect" : "Connect"}
             </Button>
           </div>

@@ -1,7 +1,7 @@
 import { toast } from "@/app/hooks/use-toast";
 
-export const TPN_VALIDATOR_IP = process.env.TPN_VALIDATOR_IP || "127.0.0.1";
-export const TPN_API_PORT = process.env.TPN_API_PORT || "8080";
+export const TPN_VALIDATOR_IP = process.env.NEXT_PUBLIC_TPN_VALIDATOR_IP || "127.0.0.1";
+export const TPN_API_PORT = process.env.NEXT_PUBLIC_TPN_API_PORT || "3000";
 const TPN_API_BASE_URL = `http://${TPN_VALIDATOR_IP}:${TPN_API_PORT}/api`;
 
 export interface VPNConfig {

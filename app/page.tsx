@@ -1,9 +1,15 @@
+"use client"
+
+import { useEffect } from "react"
 import { Button } from "@/app/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
-import { Shield, Globe, Zap, Lock } from "lucide-react"
+import { Icon } from "@iconify/react";
 import Link from "next/link"
 
 export default function Home() {
+  useEffect(() => {
+    console.log(window.location.origin)
+  }, [])
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -35,7 +41,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card>
               <CardHeader>
-                <Shield className="h-12 w-12 text-primary" />
+                <Icon icon="mdi-light:shield" className="h-12 w-12 text-primary" />
                 <CardTitle>Military-Grade Security</CardTitle>
                 <CardDescription>
                   Advanced encryption protocols to keep your data safe and secure.
@@ -44,7 +50,7 @@ export default function Home() {
             </Card>
             <Card>
               <CardHeader>
-                <Globe className="h-12 w-12 text-primary" />
+                <Icon icon="lucide:globe" className="h-12 w-12 text-primary" />
                 <CardTitle>Global Coverage</CardTitle>
                 <CardDescription>
                   Access servers in 50+ countries with unlimited bandwidth.
@@ -53,7 +59,7 @@ export default function Home() {
             </Card>
             <Card>
               <CardHeader>
-                <Zap className="h-12 w-12 text-primary" />
+                <Icon icon="lucide:zap" className="h-12 w-12 text-primary" />
                 <CardTitle>Lightning Fast</CardTitle>
                 <CardDescription>
                   Optimized servers for maximum speed and minimal latency.
@@ -62,7 +68,7 @@ export default function Home() {
             </Card>
             <Card>
               <CardHeader>
-                <Lock className="h-12 w-12 text-primary" />
+                <Icon icon="mdi-light:lock" className="h-12 w-12 text-primary" />
                 <CardTitle>No Logs Policy</CardTitle>
                 <CardDescription>
                   We never track or store your online activities.

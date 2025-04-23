@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/app/components/ui/dialog"
 import { Button } from "@/app/components/ui/button"
-import { Globe, Search } from "lucide-react"
+import { Icon } from "@iconify/react"
 import { Input } from "@/app/components/ui/input"
 import { getAvailableCountries } from "@/app/lib/tpn"
 import { toast } from "@/app/hooks/use-toast"
@@ -51,7 +51,7 @@ export function CountrySelector({ onSelect, currentCountry }: CountrySelectorPro
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" onClick={() => loadCountries()}>
-          <Globe className="mr-2 h-4 w-4" />
+          <Icon icon="lucide:globe" className="mr-2 size-4" />
           Change Location
         </Button>
       </DialogTrigger>
@@ -61,7 +61,7 @@ export function CountrySelector({ onSelect, currentCountry }: CountrySelectorPro
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Icon icon="lucide:search" className="absolute left-2 top-2.5 size-4 text-muted-foreground" />
             <Input
               placeholder="Search countries..."
               className="pl-8"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/app/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
-import { Trash2, Edit2, Clock, Globe } from "lucide-react"
+import { Icon } from "@iconify/react"
 import { getScheduledConnections, deleteScheduledConnection, VPNSchedule } from "@/app/lib/tpn"
 import { toast } from "@/app/hooks/use-toast"
 import { ScheduleDialog } from "@/app/components/vpn/schedule-dialog"
@@ -96,7 +96,7 @@ export function ScheduleList() {
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
+                    <Icon icon="lucide:globe" className="size-4" />
                     {getCountryName(schedule.country_code)}
                   </div>
                 </CardTitle>
@@ -106,14 +106,14 @@ export function ScheduleList() {
                     size="icon"
                     onClick={() => setEditingSchedule(schedule)}
                   >
-                    <Edit2 className="h-4 w-4" />
+                    <Icon icon="lucide:edit" className="size-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleDelete(schedule.id)}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Icon icon="lucide:trash" className="size-4" />
                   </Button>
                 </div>
               </CardHeader>
@@ -121,7 +121,7 @@ export function ScheduleList() {
                 <div className="grid gap-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <Icon icon="lucide:clock" className="size-4 text-muted-foreground" />
                       <span className="text-sm">
                         {new Date(schedule.start_time).toLocaleTimeString()} -{" "}
                         {new Date(schedule.end_time).toLocaleTimeString()}

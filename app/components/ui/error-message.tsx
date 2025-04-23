@@ -1,4 +1,4 @@
-import { AlertCircle } from "lucide-react"
+import { Icon } from "@iconify/react";
 import { cn } from "@/app/lib/utils"
 
 interface ErrorMessageProps {
@@ -16,7 +16,7 @@ export function ErrorMessage({ message, className }: ErrorMessageProps) {
         className
       )}
     >
-      <AlertCircle className="h-4 w-4" />
+      <Icon icon="mdi-light:alert-circle" className="h-4 w-4" />
       <span>{message}</span>
     </div>
   )

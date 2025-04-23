@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/app/components/ui/button"
 import { StatusIndicator } from "@/app/components/ui/status-indicator"
-import { Bell, Settings, User } from "lucide-react"
+import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation"
 import { cn } from "@/app/lib/utils"
 import { createClient } from "@/app/utils/supabase/client"
@@ -59,18 +59,18 @@ export function Header() {
             />
             
             <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
+              <Icon icon="mdi-light:bell" className="h-5 w-5" />
             </Button>
 
             <Button variant="ghost" size="icon" asChild>
               <Link href="/dashboard/settings">
-                <Settings className="h-5 w-5" />
+                <Icon icon="mdi-light:settings" className="h-5 w-5" />
               </Link>
             </Button>
 
             <div className="relative">
               <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
+                <Icon icon="circum:user" className="h-5 w-5" />
               </Button>
               <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
                 <div className="py-1">
