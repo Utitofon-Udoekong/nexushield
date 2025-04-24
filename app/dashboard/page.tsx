@@ -149,7 +149,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-6">
-      <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground mt-1">Manage your VPN connection and settings</p>
@@ -176,19 +176,19 @@ export default function DashboardPage() {
                 <div className="flex items-center space-x-2">
                   <Icon icon="mdi:desktop-classic" className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Operating System:</span>
-                </div>
+            </div>
                 <span className="text-sm font-medium">{deviceInfo?.os || 'Loading...'}</span>
 
                 <div className="flex items-center space-x-2">
                   <Icon icon="mdi:web" className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Browser:</span>
-                </div>
+            </div>
                 <span className="text-sm font-medium">{deviceInfo?.browser || 'Loading...'}</span>
 
                 <div className="flex items-center space-x-2">
                   <Icon icon="mdi:ip-network" className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">IP Address:</span>
-                </div>
+          </div>
                 <span className="text-sm font-medium">{deviceInfo?.ip || 'Loading...'}</span>
 
                 <div className="flex items-center space-x-2">
