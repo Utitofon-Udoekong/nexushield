@@ -4,7 +4,12 @@ import { Button } from "@/app/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Icon } from "@iconify/react"
 import { Navbar } from "@/app/components/navbar"
+
 export default function ExtensionPage() {
+  const handleDownload = () => {
+    window.location.href = '/api/extension/download'
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -22,13 +27,15 @@ export default function ExtensionPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <Button size="lg" className="space-x-2">
+          <Button size="lg" className="space-x-2" onClick={handleDownload}>
             <Icon icon="mdi:chrome" className="h-5 w-5" />
-            <span>Add to Chrome</span>
+            <span>Download Extension</span>
           </Button>
-          <Button size="lg" variant="outline" className="space-x-2">
-            <Icon icon="mdi:firefox" className="h-5 w-5" />
-            <span>Add to Firefox</span>
+          <Button size="lg" variant="outline" className="space-x-2" asChild>
+            <a href="https://chrome.google.com/webstore/detail/nexushield-vpn" target="_blank" rel="noopener noreferrer">
+              <Icon icon="mdi:chrome" className="h-5 w-5" />
+              <span>View in Chrome Web Store</span>
+            </a>
           </Button>
         </div>
       </section>
