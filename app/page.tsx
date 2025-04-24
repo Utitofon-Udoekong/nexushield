@@ -5,13 +5,15 @@ import { Button } from "@/app/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Icon } from "@iconify/react";
 import Link from "next/link"
+import { Navbar } from "@/app/components/navbar"
 
 export default function Home() {
-  useEffect(() => {
-    console.log(window.location.origin)
-  }, [])
+
+
   return (
     <div className="flex flex-col min-h-screen">
+      <Navbar />
+      
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center px-4 py-20 text-center space-y-8 bg-gradient-to-b from-background to-muted">
         <div className="space-y-4">
@@ -26,10 +28,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
           <Button size="lg" asChild>
-            <Link href="/auth/signup">Get Started</Link>
-          </Button>
-          <Button size="lg" variant="outline" asChild>
-            <Link href="/auth/login">Sign In</Link>
+            <Link href="/auth">Get Started</Link>
           </Button>
         </div>
       </section>
@@ -80,66 +79,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 px-4 bg-muted">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic</CardTitle>
-                <CardDescription>Perfect for casual users</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold mb-4">$4.99<span className="text-sm text-muted-foreground">/month</span></div>
-                <ul className="space-y-2">
-                  <li>✓ 5 Devices</li>
-                  <li>✓ 30+ Countries</li>
-                  <li>✓ Basic Support</li>
-                </ul>
-                <Button className="w-full mt-6" asChild>
-                  <Link href="/auth/signup">Get Started</Link>
-                </Button>
-              </CardContent>
-            </Card>
-            <Card className="border-primary">
-              <CardHeader>
-                <CardTitle>Pro</CardTitle>
-                <CardDescription>Best for power users</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold mb-4">$9.99<span className="text-sm text-muted-foreground">/month</span></div>
-                <ul className="space-y-2">
-                  <li>✓ 10 Devices</li>
-                  <li>✓ 50+ Countries</li>
-                  <li>✓ Priority Support</li>
-                  <li>✓ Advanced Features</li>
-                </ul>
-                <Button className="w-full mt-6" asChild>
-                  <Link href="/auth/signup">Get Started</Link>
-                </Button>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Enterprise</CardTitle>
-                <CardDescription>For businesses</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold mb-4">Custom</div>
-                <ul className="space-y-2">
-                  <li>✓ Unlimited Devices</li>
-                  <li>✓ All Countries</li>
-                  <li>✓ 24/7 Support</li>
-                  <li>✓ Custom Solutions</li>
-                </ul>
-                <Button className="w-full mt-6" asChild>
-                  <Link href="/contact">Contact Sales</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Footer */}
       <footer className="py-6 px-4 border-t">
@@ -147,17 +87,7 @@ export default function Home() {
           <div className="text-sm text-muted-foreground">
             © 2024 NexusShield. All rights reserved.
           </div>
-          <div className="flex gap-4 mt-4 md:mt-0">
-            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
-              Terms of Service
-            </Link>
-            <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">
-              Contact
-            </Link>
-          </div>
+          
         </div>
       </footer>
     </div>

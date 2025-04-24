@@ -1,247 +1,130 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Button } from "@/app/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Icon } from "@iconify/react"
-import { toast } from "@/app/hooks/use-toast"
-import { useVPN } from "@/app/components/providers/vpn-provider"
-import { createClient } from "@/app/utils/supabase/client"
-import * as ST from "@cloudflare/speedtest"
-
-interface SpeedTestResults {
-  download: number
-  upload: number
-  ping: number
-  packetLoss: number
-  loadedLatency: {
-    download: number
-    upload: number
-  }
-  aimScores: {
-    [key: string]: {
-      points: number;
-      classificationIdx: 0 | 1 | 2 | 3 | 4;
-      classificationName: "bad" | "poor" | "average" | "good" | "great";
-    }
-  }
-}
+import { useToast } from "@/app/hooks/use-toast"
 
 export function SpeedTest() {
-  const [isRunning, setIsRunning] = useState(false)
-  const [results, setResults] = useState<SpeedTestResults | null>(null)
-  const [speedTest, setSpeedTest] = useState<ST.default | null>(null)
-  const { refreshMetrics } = useVPN()
-  const supabase = createClient()
+  const [testing, setTesting] = useState(false)
+  const [results, setResults] = useState<{
+    download: number | null
+    upload: number | null
+    ping: number | null
+  }>({
+    download: null,
+    upload: null,
+    ping: null
+  })
+  const { toast } = useToast()
 
-  useEffect(() => {
-    // Initialize speed test with comprehensive configuration
-    const test = new ST.default({
-      autoStart: false,
-      measureDownloadLoadedLatency: true,
-      measureUploadLoadedLatency: true,
-      measurements: [
-        { type: 'latency', numPackets: 1 }, // initial latency estimation
-        { type: 'download', bytes: 1e5, count: 1, bypassMinDuration: true }, // initial download estimation
-        { type: 'latency', numPackets: 20 },
-        { type: 'download', bytes: 1e5, count: 9 },
-        { type: 'download', bytes: 1e6, count: 8 },
-        { type: 'upload', bytes: 1e5, count: 8 },
-        { type: 'packetLoss', numPackets: 1e3, responsesWaitTime: 3000 },
-        { type: 'upload', bytes: 1e6, count: 6 },
-        { type: 'download', bytes: 1e7, count: 6 },
-        { type: 'upload', bytes: 1e7, count: 4 },
-        { type: 'download', bytes: 2.5e7, count: 4 },
-        { type: 'upload', bytes: 2.5e7, count: 4 },
-        { type: 'download', bytes: 1e8, count: 3 },
-        { type: 'upload', bytes: 5e7, count: 3 },
-        { type: 'download', bytes: 2.5e8, count: 2 }
-      ]
-    })
+  const runSpeedTest = async () => {
+    setTesting(true)
+    setResults({ download: null, upload: null, ping: null })
 
-    test.onRunningChange = (running) => {
-      setIsRunning(running)
-    }
+    try {
+      // Simulate ping test
+      const pingStart = Date.now()
+      await fetch('https://api.ipify.org?format=json')
+      const pingTime = Date.now() - pingStart
 
-    test.onResultsChange = () => {
-      const results = test.results
-      if (results) {
-        const download = results.getDownloadBandwidth()
-        const upload = results.getUploadBandwidth()
-        const ping = results.getUnloadedLatency()
-        const packetLoss = results.getPacketLoss()
-        const downLoadedLatency = results.getDownLoadedLatency()
-        const upLoadedLatency = results.getUpLoadedLatency()
-        const scores = results.getScores()
+      // Simulate download test with a 10MB file
+      const downloadStart = Date.now()
+      const downloadRes = await fetch('https://speed.cloudflare.com/__down?bytes=10000000')
+      const downloadData = await downloadRes.blob()
+      const downloadTime = (Date.now() - downloadStart) / 1000 // seconds
+      const downloadSpeed = (downloadData.size * 8) / (1000000 * downloadTime) // Mbps
 
-        if (download !== undefined && upload !== undefined && ping !== undefined) {
-          setResults({
-            download: download / 1e6, // Convert to Mbps
-            upload: upload / 1e6, // Convert to Mbps
-            ping: ping,
-            packetLoss: packetLoss ? packetLoss * 100 : 0, // Convert to percentage
-            loadedLatency: {
-              download: downLoadedLatency || 0,
-              upload: upLoadedLatency || 0
-            },
-            aimScores: {
-              streaming: scores?.streaming,
-              gaming: scores?.gaming,
-              realTime: scores?.realTime
-            }
-          })
-        }
-      }
-    }
-
-    test.onError = (error) => {
-      console.error("Speed test error:", error)
-      toast({
-        title: "Error",
-        description: "Failed to run speed test. Please try again.",
-        variant: "destructive",
+      // Simulate upload test with a 5MB file
+      const uploadData = new Blob([new ArrayBuffer(5000000)])
+      const uploadStart = Date.now()
+      await fetch('https://speed.cloudflare.com/__up', {
+        method: 'POST',
+        body: uploadData
       })
-      setIsRunning(false)
-    }
+      const uploadTime = (Date.now() - uploadStart) / 1000 // seconds
+      const uploadSpeed = (uploadData.size * 8) / (1000000 * uploadTime) // Mbps
 
-    test.onFinish = async () => {
-      // Record the results in the database
-      if (results) {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session) {
-          await supabase
-            .from('performance_metrics')
-            .insert({
-              user_id: session.user.id,
-              download_speed: results.download,
-              upload_speed: results.upload,
-              latency: results.ping,
-              packet_loss: results.packetLoss,
-              loaded_latency: results.loadedLatency,
-              aim_scores: results.aimScores
-            })
-        }
-      }
-
-      toast({
-        title: "Speed test completed",
-        description: "Your connection speed has been measured.",
+      setResults({
+        download: Math.round(downloadSpeed * 100) / 100,
+        upload: Math.round(uploadSpeed * 100) / 100,
+        ping: Math.round(pingTime)
       })
 
-      // Refresh the metrics in the VPN provider
-      await refreshMetrics()
+      toast({
+        title: "Speed Test Complete",
+        description: "Your network speed has been measured successfully.",
+        variant: "success"
+      })
+    } catch (error) {
+      console.error('Speed test failed:', error)
+      toast({
+        title: "Speed Test Failed",
+        description: "There was an error measuring your network speed.",
+        variant: "destructive"
+      })
+    } finally {
+      setTesting(false)
     }
-
-    setSpeedTest(test)
-
-    return () => {
-      if (test.isRunning) {
-        test.pause()
-      }
-    }
-  }, [results, refreshMetrics])
-
-  const runSpeedTest = () => {
-    if (speedTest) {
-      if (speedTest.isFinished) {
-        speedTest.restart()
-      } else {
-        speedTest.play()
-      }
-    }
-  }
-
-  const getAIMScoreColor = (score: string) => {
-    if (score === "great") return "text-green-500"
-    if (score === "good") return "text-yellow-500"
-    if (score === "average") return "text-orange-500"
-    if (score === "poor") return "text-red-500"
-    if (score === "bad") return "text-red-500"
-    return "text-gray-500"
   }
 
   return (
-    <Card>
+    <Card className="border-0 bg-background">
       <CardHeader>
-        <CardTitle>Speed Test</CardTitle>
+        <CardTitle className="text-2xl">Speed Test</CardTitle>
+        <CardDescription>
+          Measure your current connection speed
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="grid gap-6">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="p-4 rounded-lg bg-muted">
+              <div className="flex items-center text-sm text-muted-foreground mb-2">
+                <Icon icon="mdi:download" className="mr-2 h-4 w-4" />
+                Download Speed
+              </div>
+              <div className="text-2xl font-bold">
+                {results.download === null ? '--' : `${results.download} Mbps`}
+              </div>
+            </div>
+            <div className="p-4 rounded-lg bg-muted">
+              <div className="flex items-center text-sm text-muted-foreground mb-2">
+                <Icon icon="mdi:upload" className="mr-2 h-4 w-4" />
+                Upload Speed
+              </div>
+              <div className="text-2xl font-bold">
+                {results.upload === null ? '--' : `${results.upload} Mbps`}
+              </div>
+            </div>
+            <div className="p-4 rounded-lg bg-muted">
+              <div className="flex items-center text-sm text-muted-foreground mb-2">
+                <Icon icon="mdi:timer" className="mr-2 h-4 w-4" />
+                Ping
+              </div>
+              <div className="text-2xl font-bold">
+                {results.ping === null ? '--' : `${results.ping} ms`}
+              </div>
+            </div>
+          </div>
           <Button 
-            onClick={runSpeedTest}
-            disabled={isRunning}
+            onClick={runSpeedTest} 
+            disabled={testing}
             className="w-full"
           >
-            {isRunning ? (
+            {testing ? (
               <>
-                <Icon icon="lucide:loader" className="mr-2 size-4 animate-spin" />
+                <Icon icon="mdi:loading" className="mr-2 h-4 w-4 animate-spin" />
                 Running Speed Test...
               </>
             ) : (
-              "Run Speed Test"
+              <>
+                <Icon icon="mdi:speed-meter" className="mr-2 h-4 w-4" />
+                Start Speed Test
+              </>
             )}
           </Button>
-
-          {results && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Download</p>
-                  <p className="text-2xl font-bold">{results.download.toFixed(2)} Mbps</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Upload</p>
-                  <p className="text-2xl font-bold">{results.upload.toFixed(2)} Mbps</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Ping</p>
-                  <p className="text-2xl font-bold">{results.ping.toFixed(2)} ms</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Packet Loss</p>
-                  <p className="text-2xl font-bold">{results.packetLoss.toFixed(2)}%</p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium">Loaded Latency</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">During Download</p>
-                    <p className="text-lg font-medium">{results.loadedLatency.download.toFixed(2)} ms</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">During Upload</p>
-                    <p className="text-lg font-medium">{results.loadedLatency.upload.toFixed(2)} ms</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium">Application Impact Metrics</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Streaming</p>
-                    <p className={`text-lg font-medium ${getAIMScoreColor(results.aimScores.streaming.classificationName)}`}>
-                      {results.aimScores.streaming.points.toFixed(0)}%
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Gaming</p>
-                    <p className={`text-lg font-medium ${getAIMScoreColor(results.aimScores.gaming.classificationName)}`}>
-                      {results.aimScores.gaming.points.toFixed(0)}%
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Real-time</p>
-                    <p className={`text-lg font-medium ${getAIMScoreColor(results.aimScores.realTime.classificationName)}`}>
-                      {results.aimScores.realTime.points.toFixed(0)}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>

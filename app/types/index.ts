@@ -266,9 +266,10 @@ export interface VPNConnection {
 
 export interface VPNMetrics {
   latency: number
-  downloadSpeed: number
-  uploadSpeed: number
-  packetLoss: number
+  download_speed: number
+  upload_speed: number
+  packet_loss: number
+  timestamp: string
   loadedLatency?: {
     download: number
     upload: number
@@ -326,10 +327,20 @@ export interface SpeedTestResults {
 }
 
 export interface MetricsData {
+  current: {
+    download_speed: number;
+    upload_speed: number;
+    latency: number;
+    packet_loss: number;
+    timestamp: string;
+  };
   historical: Array<{
-    timestamp: string
-    value: number
-  }>
+    timestamp: string;
+    download_speed: number;
+    upload_speed: number;
+    latency: number;
+    packet_loss: number;
+  }>;
 }
 
 export interface ConnectionStatus {
@@ -340,7 +351,7 @@ export interface ConnectionStatus {
 
 export interface Metrics {
   current: VPNMetrics
-  historical: MetricsData
+  historical: VPNMetrics[]
 }
 
 export interface ScheduleDialogProps {

@@ -1,4 +1,5 @@
 import { toast } from "@/app/hooks/use-toast";
+import { MetricsData } from "../types";
 
 export const TPN_VALIDATOR_IP = process.env.NEXT_PUBLIC_TPN_VALIDATOR_IP || "127.0.0.1";
 export const TPN_API_PORT = process.env.NEXT_PUBLIC_TPN_API_PORT || "3000";
@@ -12,6 +13,8 @@ export interface VPNConfig {
 export interface VPNConnection {
   connected: boolean;
   country_code: string;
+  public_ip?: string;
+  expires_at?: number;
   download_speed: number;
   upload_speed: number;
   latency: number;
@@ -38,15 +41,63 @@ export interface VPNSchedule {
   status: "pending" | "active" | "completed" | "failed";
 }
 
-export async function getAvailableCountries(): Promise<string[]> {
+interface CountriesCache {
+  countries: string[];
+  timestamp: number;
+}
+
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+const CACHE_KEY = 'vpn_countries_cache';
+
+function getCachedCountries(): CountriesCache | null {
+  if (typeof window === 'undefined') return null;
+  
   try {
-    const response = await fetch(`${TPN_API_BASE_URL}/config/countries`);
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) return null;
+    
+    const parsed = JSON.parse(cached) as CountriesCache;
+    return parsed;
+  } catch (error) {
+    console.error('Error reading countries cache:', error);
+    return null;
+  }
+}
+
+function setCachedCountries(cache: CountriesCache): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+  } catch (error) {
+    console.error('Error writing countries cache:', error);
+  }
+}
+
+export async function getAvailableCountries(): Promise<string[]> {
+  // Check if we have a valid cache
+  const cached = getCachedCountries();
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    return cached.countries;
+  }
+
+  try {
+    const response = await fetch(`/api/vpn/countries`);
     
     if (!response.ok) {
       throw new Error(`Failed to fetch countries: ${response.status}`);
     }
     
-    return await response.json();
+    const countries = await response.json();
+    
+    // Update the cache
+    const newCache = {
+      countries,
+      timestamp: Date.now()
+    };
+    setCachedCountries(newCache);
+    
+    return countries;
   } catch (error) {
     console.error("Error fetching countries:", error);
     toast({
@@ -54,6 +105,12 @@ export async function getAvailableCountries(): Promise<string[]> {
       description: "Failed to fetch available countries",
       variant: "destructive",
     });
+    
+    // If we have cached data, return it even if it's expired
+    if (cached) {
+      return cached.countries;
+    }
+    
     return [];
   }
 }
@@ -64,7 +121,7 @@ export async function getVPNConfig(
 ): Promise<VPNConfig | null> {
   try {
     const response = await fetch(
-      `${TPN_API_BASE_URL}/config/new?format=json&geo=${country}&lease_minutes=${leaseMinutes}`
+      `/api/vpn/config?country=${country}&lease_minutes=${leaseMinutes}`
     );
     
     if (!response.ok) {
@@ -88,27 +145,19 @@ export async function connectVPN(
   leaseMinutes: number = 30
 ): Promise<VPNConnection | null> {
   try {
-    const config = await getVPNConfig(country, leaseMinutes);
-    
-    if (!config) {
-      throw new Error("Failed to get VPN configuration");
-    }
-    
-    // Save config to database
-    const response = await fetch("/api/vpn/connect", {
+    const response = await fetch(`/api/vpn/connect`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        country_code: country,
-        config: config.peer_config,
-        expires_at: config.expires_at,
+        countryCode: country,
+        leaseMinutes,
       }),
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to connect to VPN: ${response.status}`);
+      throw new Error(`Failed to connect to VPN: ${response.status} ${response.statusText}`);
     }
     
     return await response.json();
@@ -125,12 +174,12 @@ export async function connectVPN(
 
 export async function disconnectVPN(): Promise<boolean> {
   try {
-    const response = await fetch("/api/vpn/disconnect", {
+    const response = await fetch(`/api/vpn/disconnect`, {
       method: "POST",
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to disconnect from VPN: ${response.status}`);
+      throw new Error(`Failed to disconnect from VPN: ${response.status} ${response.statusText}`);
     }
     
     return true;
@@ -147,7 +196,7 @@ export async function disconnectVPN(): Promise<boolean> {
 
 export async function getVPNStatus(): Promise<VPNConnection | null> {
   try {
-    const response = await fetch("/api/vpn/status");
+    const response = await fetch(`/api/vpn/status`);
     
     if (!response.ok) {
       throw new Error(`Failed to get VPN status: ${response.status}`);
@@ -160,14 +209,9 @@ export async function getVPNStatus(): Promise<VPNConnection | null> {
   }
 }
 
-export async function getConnectionMetrics(): Promise<{
-  latency: number;
-  downloadSpeed: number;
-  uploadSpeed: number;
-  packetLoss: number;
-} | null> {
+export async function getConnectionMetrics(): Promise<MetricsData | null> {
   try {
-    const response = await fetch("/api/vpn/metrics");
+    const response = await fetch(`/api/vpn/metrics`);
     
     if (!response.ok) {
       throw new Error(`Failed to get connection metrics: ${response.status}`);
@@ -187,7 +231,7 @@ export async function scheduleConnection(
   daysOfWeek: number[]
 ): Promise<boolean> {
   try {
-    const response = await fetch("/api/vpn/schedule", {
+    const response = await fetch(`/api/vpn/schedule`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -218,7 +262,7 @@ export async function scheduleConnection(
 
 export async function getScheduledConnections(): Promise<VPNSchedule[]> {
   try {
-    const response = await fetch(`${TPN_API_BASE_URL}/schedules`);
+    const response = await fetch(`/api/vpn/schedules`);
     if (!response.ok) {
       throw new Error("Failed to fetch scheduled connections");
     }
@@ -241,7 +285,7 @@ export async function createSchedule(
   days_of_week: number[]
 ): Promise<VPNSchedule | null> {
   try {
-    const response = await fetch(`${TPN_API_BASE_URL}/schedules`, {
+    const response = await fetch(`/api/vpn/schedules`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -272,7 +316,7 @@ export async function createSchedule(
 
 export async function deleteSchedule(id: string): Promise<boolean> {
   try {
-    const response = await fetch(`${TPN_API_BASE_URL}/schedules/${id}`, {
+    const response = await fetch(`/api/vpn/schedules/${id}`, {
       method: "DELETE",
     });
 
@@ -297,7 +341,7 @@ export async function updateSchedule(
   data: Partial<VPNSchedule>
 ): Promise<VPNSchedule | null> {
   try {
-    const response = await fetch(`${TPN_API_BASE_URL}/schedules/${id}`, {
+    const response = await fetch(`/api/vpn/schedules/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -323,7 +367,7 @@ export async function updateSchedule(
 
 export async function deleteScheduledConnection(id: string): Promise<void> {
   try {
-    const response = await fetch(`${TPN_API_BASE_URL}/schedules/${id}`, {
+    const response = await fetch(`/api/vpn/schedules/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

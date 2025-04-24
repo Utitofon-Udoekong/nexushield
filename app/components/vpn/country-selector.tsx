@@ -6,6 +6,7 @@ import { Input } from "@/app/components/ui/input"
 import { getAvailableCountries } from "@/app/lib/tpn"
 import { toast } from "@/app/hooks/use-toast"
 import { cn } from "@/app/lib/utils"
+import Image from "next/image"
 
 interface CountrySelectorProps {
   onSelect: (countryCode: string) => void
@@ -52,7 +53,7 @@ export function CountrySelector({ onSelect, currentCountry }: CountrySelectorPro
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" onClick={() => loadCountries()}>
           <Icon icon="lucide:globe" className="mr-2 size-4" />
-          Change Location
+          Select Location
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -89,7 +90,14 @@ export function CountrySelector({ onSelect, currentCountry }: CountrySelectorPro
                       setOpen(false)
                     }}
                   >
-                    <span className="mr-2">{getCountryFlag(country.code)}</span>
+                    <Image
+                      src={`https://flagcdn.com/16x12/${country.code.toLowerCase()}.png`}
+                      width={16}
+                      height={12}
+                      alt={country.name}
+                      className="mr-2"
+                      unoptimized
+                    />
                     {country.name}
                   </Button>
                 ))}
@@ -99,15 +107,6 @@ export function CountrySelector({ onSelect, currentCountry }: CountrySelectorPro
         </div>
       </DialogContent>
     </Dialog>
-  )
-}
-
-function getCountryFlag(countryCode: string) {
-  return String.fromCodePoint(
-    ...countryCode
-      .toUpperCase()
-      .split("")
-      .map((char) => 127397 + char.charCodeAt(0))
   )
 }
 

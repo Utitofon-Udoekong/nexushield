@@ -1,25 +1,24 @@
-import { ReactNode } from "react";
-import { cn } from "@/app/lib/utils";
-import { Button } from "@/app/components/ui/button";
-import { Icon } from "@iconify/react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+"use client"
+
+import { ReactNode } from "react"
+import { cn } from "@/app/lib/utils"
+import { Icon } from "@iconify/react"
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { Button } from "../components/ui/button"
 
 interface DashboardLayoutProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: "lucide:shield" },
-  { name: "VPN Status", href: "/dashboard/vpn", icon: "lucide:globe" },
-  { name: "Schedules", href: "/dashboard/schedules", icon: "lucide:calendar" },
-  { name: "Metrics", href: "/dashboard/metrics", icon: "lucide:activity" },
   { name: "Settings", href: "/dashboard/settings", icon: "mdi-light:settings" },
-];
+]
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const pathname = usePathname();
-
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const pathname = usePathname()
+  const router = useRouter()
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
@@ -35,7 +34,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="mt-5 flex-grow flex flex-col">
               <nav className="flex-1 px-2 space-y-1">
                 {navigation.map((item) => {
-                  const isActive = pathname === item.href;
+                  const isActive = pathname === item.href
                   return (
                     <Link
                       key={item.name}
@@ -47,7 +46,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                           : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                       )}
                     >
-                      <Icon icon={item.icon} className={cn(
+                      <Icon
+                        icon={item.icon}
+                        className={cn(
                           "mr-3 h-5 w-5",
                           isActive
                             ? "text-indigo-600 dark:text-indigo-300"
@@ -56,17 +57,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       />
                       {item.name}
                     </Link>
-                  );
+                  )
                 })}
               </nav>
             </div>
             <div className="flex-shrink-0 flex border-t border-gray-200 dark:border-gray-700 p-4">
               <Button
                 variant="ghost"
+                onClick={() => router.push("/")}
                 className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
               >
                 <Icon icon="mdi-light:logout" className="mr-3 h-5 w-5" />
-                Sign out
+                Back to Home
               </Button>
             </div>
           </div>
@@ -84,5 +86,5 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </main>
       </div>
     </div>
-  );
+  )
 } 
