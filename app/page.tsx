@@ -1,15 +1,12 @@
 "use client"
 
-import { useEffect } from "react"
 import { Button } from "@/app/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
-import { Icon } from "@iconify/react";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Icon } from "@iconify/react"
 import Link from "next/link"
 import { Navbar } from "@/app/components/navbar"
 
 export default function Home() {
-
-
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -18,17 +15,17 @@ export default function Home() {
       <section className="flex flex-col items-center justify-center px-4 py-20 text-center space-y-8 bg-gradient-to-b from-background to-muted">
         <div className="space-y-4">
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-            Secure Your Digital Life with{" "}
-            <span className="text-primary">NexusShield</span>
+            Simple WireGuard VPN{" "}
+            <span className="text-primary">Configuration</span>
           </h1>
           <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-            Experience lightning-fast VPN connections with military-grade encryption. 
-            Protect your privacy and access content from anywhere in the world.
+            Generate and manage WireGuard VPN configurations with ease. Monitor your connection speed, 
+            and get detailed network insights - all in one place.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
           <Button size="lg" asChild>
-            <Link href="/auth">Get Started</Link>
+            <Link href="/dashboard">Get Started</Link>
           </Button>
         </div>
       </section>
@@ -36,41 +33,32 @@ export default function Home() {
       {/* Features Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose NexusShield?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Key Features</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
-                <Icon icon="mdi-light:shield" className="h-12 w-12 text-primary" />
-                <CardTitle>Military-Grade Security</CardTitle>
+                <Icon icon="mdi:vpn" className="h-12 w-12 text-primary" />
+                <CardTitle>Easy Configuration</CardTitle>
                 <CardDescription>
-                  Advanced encryption protocols to keep your data safe and secure.
+                  Generate WireGuard configurations for multiple countries with customizable lease durations. Download configs or use QR codes for mobile setup.
                 </CardDescription>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <Icon icon="lucide:globe" className="h-12 w-12 text-primary" />
-                <CardTitle>Global Coverage</CardTitle>
+                <Icon icon="mdi:speed-meter" className="h-12 w-12 text-primary" />
+                <CardTitle>Network Insights</CardTitle>
                 <CardDescription>
-                  Access servers in 50+ countries with unlimited bandwidth.
+                  Monitor your connection with real-time speed tests, including download/upload speeds, ping, and packet loss measurements.
                 </CardDescription>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <Icon icon="lucide:zap" className="h-12 w-12 text-primary" />
-                <CardTitle>Lightning Fast</CardTitle>
+                <Icon icon="mdi:devices" className="h-12 w-12 text-primary" />
+                <CardTitle>Device Information</CardTitle>
                 <CardDescription>
-                  Optimized servers for maximum speed and minimal latency.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <Icon icon="mdi-light:lock" className="h-12 w-12 text-primary" />
-                <CardTitle>No Logs Policy</CardTitle>
-                <CardDescription>
-                  We never track or store your online activities.
+                  View detailed information about your device, network, and location. Track your public IP and connection details.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -78,16 +66,56 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      
+      {/* How It Works Section */}
+      <section className="py-20 px-4 bg-muted/50">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-xl font-bold text-primary">1</span>
+              </div>
+              <h3 className="text-xl font-semibold">Select Location</h3>
+              <p className="text-muted-foreground">
+                Choose your preferred server location from our list of available countries
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-xl font-bold text-primary">2</span>
+              </div>
+              <h3 className="text-xl font-semibold">Generate Config</h3>
+              <p className="text-muted-foreground">
+                Set your desired lease duration and generate a WireGuard configuration
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-xl font-bold text-primary">3</span>
+              </div>
+              <h3 className="text-xl font-semibold">Connect</h3>
+              <p className="text-muted-foreground">
+                Download the config file or scan the QR code with your WireGuard app
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="py-6 px-4 border-t">
+      <footer className="py-6 px-4 border-t mt-auto">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="text-sm text-muted-foreground">
             © 2024 NexusShield. All rights reserved.
           </div>
-          
+          <div className="flex items-center space-x-4 mt-4 md:mt-0">
+            <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-primary">
+              Dashboard
+            </Link>
+            <Link href="/dashboard/settings" className="text-sm text-muted-foreground hover:text-primary">
+              Settings
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

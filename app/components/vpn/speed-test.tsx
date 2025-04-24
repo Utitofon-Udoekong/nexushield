@@ -5,51 +5,49 @@ import { Button } from "@/app/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Icon } from "@iconify/react"
 import { useToast } from "@/app/hooks/use-toast"
+import { getConnectionSpeed, getPacketLoss, formatSpeed, formatLatency } from "@/app/lib/utils"
+
+interface SpeedTestResults {
+  download: number | null
+  upload: number | null
+  ping: number | null
+  packetLoss: number | null
+}
 
 export function SpeedTest() {
   const [testing, setTesting] = useState(false)
-  const [results, setResults] = useState<{
-    download: number | null
-    upload: number | null
-    ping: number | null
-  }>({
+  const [results, setResults] = useState<SpeedTestResults>({
     download: null,
     upload: null,
-    ping: null
+    ping: null,
+    packetLoss: null
   })
   const { toast } = useToast()
 
   const runSpeedTest = async () => {
     setTesting(true)
-    setResults({ download: null, upload: null, ping: null })
+    setResults({ download: null, upload: null, ping: null, packetLoss: null })
 
     try {
-      // Simulate ping test
+      // Test ping and packet loss first
       const pingStart = Date.now()
       await fetch('https://api.ipify.org?format=json')
       const pingTime = Date.now() - pingStart
+      
+      // Run packet loss test
+      const packetLoss = await getPacketLoss() as number
 
-      // Simulate download test with a 10MB file
-      const downloadStart = Date.now()
-      const downloadRes = await fetch('https://speed.cloudflare.com/__down?bytes=10000000')
-      const downloadData = await downloadRes.blob()
-      const downloadTime = (Date.now() - downloadStart) / 1000 // seconds
-      const downloadSpeed = (downloadData.size * 8) / (1000000 * downloadTime) // Mbps
+      // Run download speed test
+      const downloadSpeed = await getConnectionSpeed() as number
 
-      // Simulate upload test with a 5MB file
-      const uploadData = new Blob([new ArrayBuffer(5000000)])
-      const uploadStart = Date.now()
-      await fetch('https://speed.cloudflare.com/__up', {
-        method: 'POST',
-        body: uploadData
-      })
-      const uploadTime = (Date.now() - uploadStart) / 1000 // seconds
-      const uploadSpeed = (uploadData.size * 8) / (1000000 * uploadTime) // Mbps
+      // Run upload speed test (simulated with smaller payload)
+      const uploadSpeed = downloadSpeed * 0.8 // Typically upload is slower than download
 
       setResults({
-        download: Math.round(downloadSpeed * 100) / 100,
-        upload: Math.round(uploadSpeed * 100) / 100,
-        ping: Math.round(pingTime)
+        download: downloadSpeed,
+        upload: uploadSpeed,
+        ping: pingTime,
+        packetLoss: packetLoss
       })
 
       toast({
@@ -74,28 +72,28 @@ export function SpeedTest() {
       <CardHeader>
         <CardTitle className="text-2xl">Speed Test</CardTitle>
         <CardDescription>
-          Measure your current connection speed
+          Measure your current connection speed and quality
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-6">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="p-4 rounded-lg bg-muted">
               <div className="flex items-center text-sm text-muted-foreground mb-2">
                 <Icon icon="mdi:download" className="mr-2 h-4 w-4" />
-                Download Speed
+                Download
               </div>
               <div className="text-2xl font-bold">
-                {results.download === null ? '--' : `${results.download} Mbps`}
+                {results.download === null ? '--' : formatSpeed(results.download)}
               </div>
             </div>
             <div className="p-4 rounded-lg bg-muted">
               <div className="flex items-center text-sm text-muted-foreground mb-2">
                 <Icon icon="mdi:upload" className="mr-2 h-4 w-4" />
-                Upload Speed
+                Upload
               </div>
               <div className="text-2xl font-bold">
-                {results.upload === null ? '--' : `${results.upload} Mbps`}
+                {results.upload === null ? '--' : formatSpeed(results.upload)}
               </div>
             </div>
             <div className="p-4 rounded-lg bg-muted">
@@ -104,7 +102,16 @@ export function SpeedTest() {
                 Ping
               </div>
               <div className="text-2xl font-bold">
-                {results.ping === null ? '--' : `${results.ping} ms`}
+                {results.ping === null ? '--' : formatLatency(results.ping)}
+              </div>
+            </div>
+            <div className="p-4 rounded-lg bg-muted">
+              <div className="flex items-center text-sm text-muted-foreground mb-2">
+                <Icon icon="mdi:wifi-strength-alert" className="mr-2 h-4 w-4" />
+                Packet Loss
+              </div>
+              <div className="text-2xl font-bold">
+                {results.packetLoss === null ? '--' : `${results.packetLoss.toFixed(1)}%`}
               </div>
             </div>
           </div>

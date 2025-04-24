@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
-import { Badge } from "@/app/components/ui/badge"
 import { Icon } from "@iconify/react"
-import { VPNConnection } from "@/app/lib/tpn"
 import { useToast } from "@/app/hooks/use-toast"
 import { CountrySelector } from "@/app/components/vpn/country-selector"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/components/ui/dialog"
@@ -15,6 +13,19 @@ import { ConfigDownloader } from "@/app/components/vpn/config-downloader"
 import { Alert, AlertDescription, AlertTitle } from "@/app/components/ui/alert"
 import { SpeedTest } from "@/app/components/vpn/speed-test"
 import { getVPNPreferences } from "@/app/lib/preferences"
+import { getDeviceType, getOperatingSystem, getBrowser, getCurrentIP, getLocationInfo } from "@/app/lib/utils"
+
+interface DeviceInfo {
+  type: string
+  os: string
+  browser: string
+  ip: string | null
+  location: {
+    city?: string
+    region?: string
+    country?: string
+  } | null
+}
 
 export default function DashboardPage() {
   const [selectedCountry, setSelectedCountry] = useState<string>()
@@ -24,6 +35,7 @@ export default function DashboardPage() {
   const [expiresAt, setExpiresAt] = useState<number | null>(null)
   const [timeRemaining, setTimeRemaining] = useState<string>("")
   const [isGettingConfig, setIsGettingConfig] = useState(false)
+  const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -33,6 +45,26 @@ export default function DashboardPage() {
       setLeaseMinutes(preferences.leaseMinutes)
     }
     loadPreferences()
+  }, [])
+
+  useEffect(() => {
+    const loadDeviceInfo = async () => {
+      if (typeof window === 'undefined') return
+
+      const userAgent = window.navigator.userAgent
+      const ip = await getCurrentIP()
+      const location = ip ? await getLocationInfo(ip) : null
+
+      setDeviceInfo({
+        type: getDeviceType(userAgent),
+        os: getOperatingSystem(userAgent),
+        browser: getBrowser(userAgent),
+        ip,
+        location
+      })
+    }
+
+    loadDeviceInfo()
   }, [])
 
   useEffect(() => {
@@ -117,14 +149,62 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-6">
-        <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground mt-1">Manage your VPN connection and settings</p>
-            </div>
-          </div>
+        </div>
+      </div>
 
       <div className="grid gap-6 md:grid-cols-2">
+        <Card className="border-0 bg-background">
+          <CardHeader>
+            <CardTitle className="text-2xl">Device Information</CardTitle>
+            <CardDescription>
+              Your current device and network details
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                <div className="flex items-center space-x-2">
+                  <Icon icon="mdi:devices" className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Device Type:</span>
+                </div>
+                <span className="text-sm font-medium">{deviceInfo?.type || 'Loading...'}</span>
+
+                <div className="flex items-center space-x-2">
+                  <Icon icon="mdi:desktop-classic" className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Operating System:</span>
+                </div>
+                <span className="text-sm font-medium">{deviceInfo?.os || 'Loading...'}</span>
+
+                <div className="flex items-center space-x-2">
+                  <Icon icon="mdi:web" className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Browser:</span>
+                </div>
+                <span className="text-sm font-medium">{deviceInfo?.browser || 'Loading...'}</span>
+
+                <div className="flex items-center space-x-2">
+                  <Icon icon="mdi:ip-network" className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">IP Address:</span>
+                </div>
+                <span className="text-sm font-medium">{deviceInfo?.ip || 'Loading...'}</span>
+
+                <div className="flex items-center space-x-2">
+                  <Icon icon="mdi:map-marker" className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Location:</span>
+                </div>
+                <span className="text-sm font-medium">
+                  {deviceInfo?.location ? (
+                    `${deviceInfo.location.city || ''} ${deviceInfo.location.region || ''}, ${deviceInfo.location.country || ''}`
+                  ) : 'Loading...'}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="border-0 bg-background">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl">VPN Config</CardTitle>

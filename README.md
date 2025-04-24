@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NexusShield - WireGuard VPN Configuration Manager
+
+NexusShield is a modern web application that simplifies the process of generating and managing WireGuard VPN configurations. Built with Next.js and TypeScript, it provides a user-friendly interface for creating VPN configurations, monitoring network performance, and managing connection settings.
+
+## Features
+
+### VPN Configuration Management
+- Generate WireGuard configurations for multiple countries
+- Customizable lease durations for temporary configurations
+- Download configuration files or use QR codes for mobile setup
+- Save preferred country and lease duration settings
+
+### Network Monitoring
+- Real-time speed testing capabilities
+  - Download and upload speed measurements
+  - Ping latency testing
+  - Packet loss detection
+- Connection quality monitoring
+- Detailed network metrics
+
+### Device Information
+- Comprehensive device detection
+- Operating system identification
+- Browser information
+- Current IP address and location details
+- Network status monitoring
+
+## Technology Stack
+
+- **Frontend Framework**: Next.js 14 with App Router
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **Language**: TypeScript
+- **State Management**: React Hooks and Local Storage
+- **Network Testing**: Custom implementation using browser APIs
+- **Icons**: Iconify
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/nexushield.git
+   cd nexushield
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Usage
+
+1. **Generate VPN Configuration**:
+   - Visit the dashboard
+   - Select your preferred country
+   - Set the lease duration
+   - Generate and download the configuration
+
+2. **Monitor Network Performance**:
+   - Use the built-in speed test tool
+   - View real-time network metrics
+   - Track connection quality
+
+3. **Manage Settings**:
+   - Set default country preferences
+   - Configure default lease durations
+   - View device and network information
+
+## Project Structure
+
+```
+nexushield/
+├── app/
+│   ├── components/    # Reusable UI components
+│   ├── lib/          # Utility functions and helpers
+│   ├── hooks/        # Custom React hooks
+│   └── dashboard/    # Dashboard pages and features
+├── public/           # Static assets
+└── styles/          # Global styles and Tailwind config
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## License
 
-## Learn More
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-To learn more about Next.js, take a look at the following resources:
+## Acknowledgments
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Built with [Next.js](https://nextjs.org/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Iconify](https://iconify.design/)
