@@ -14,10 +14,9 @@ import { Button } from "@/app/components/ui/button"
 import { ConfigDownloader } from "@/app/components/vpn/config-downloader"
 import { Alert, AlertDescription, AlertTitle } from "@/app/components/ui/alert"
 import { SpeedTest } from "@/app/components/vpn/speed-test"
+import { getVPNPreferences } from "@/app/lib/preferences"
 
 export default function DashboardPage() {
-  const [vpnStatus, setVpnStatus] = useState<VPNConnection | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [selectedCountry, setSelectedCountry] = useState<string>()
   const [config, setConfig] = useState<string | null>(null)
   const [leaseMinutes, setLeaseMinutes] = useState(30)
@@ -27,29 +26,14 @@ export default function DashboardPage() {
   const [isGettingConfig, setIsGettingConfig] = useState(false)
   const { toast } = useToast()
 
-  // useEffect(() => {
-  //   const fetchStatus = async () => {
-  //     try {
-  //       const response = await fetch('/api/vpn/status')
-  //       if (!response.ok) throw new Error('Failed to fetch VPN status')
-  //       const data = await response.json()
-  //       setVpnStatus(data)
-  //     } catch (error) {
-  //       console.error('Error fetching VPN status:', error)
-  //       toast({
-  //         title: "Error",
-  //         description: "Failed to fetch VPN status",
-  //         variant: "destructive",
-  //       })
-  //     } finally {
-  //       setIsLoading(false)
-  //     }
-  //   }
-
-  //   fetchStatus()
-  //   const interval = setInterval(fetchStatus, 5000)
-  //   return () => clearInterval(interval)
-  // }, [])
+  useEffect(() => {
+    const loadPreferences = () => {
+      const preferences = getVPNPreferences()
+      setSelectedCountry(preferences.preferredCountry)
+      setLeaseMinutes(preferences.leaseMinutes)
+    }
+    loadPreferences()
+  }, [])
 
   useEffect(() => {
     if (!expiresAt) return
@@ -132,13 +116,13 @@ export default function DashboardPage() {
   } 
 
   return (
-    <div className="space-y-6 mx-auto py-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 max-w-5xl mx-auto py-6">
+        <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground mt-1">Manage your VPN connection and settings</p>
-        </div>
-      </div>
+            </div>
+          </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="border-0 bg-background">
@@ -154,9 +138,9 @@ export default function DashboardPage() {
                 <div className="w-full md:w-auto">
                   <CountrySelector
                     onSelect={handleCountrySelect}
-                    currentCountry={vpnStatus?.country_code}
+                    currentCountry={selectedCountry}
                   />
-                </div>
+              </div>
               </div>
               {config && expiresAt && (
                 <div className="mt-4">
@@ -169,9 +153,9 @@ export default function DashboardPage() {
                       Your VPN configuration will expire in {timeRemaining}
                     </AlertDescription>
                   </Alert>
-                </div>
-              )}
             </div>
+          )}
+        </div>
           </CardContent>
         </Card>
 
@@ -199,7 +183,7 @@ export default function DashboardPage() {
         </Card>
 
         
-      </div>
+          </div>
 
       <Dialog open={showLeaseDialog} onOpenChange={setShowLeaseDialog}>
         <DialogContent className="sm:max-w-[425px]">
@@ -229,7 +213,7 @@ export default function DashboardPage() {
                 disabled={isGettingConfig}
               >
                 Cancel
-              </Button>
+            </Button>
               <Button 
                 onClick={handleGetConfig}
                 disabled={isGettingConfig}
@@ -243,11 +227,11 @@ export default function DashboardPage() {
                 ) : (
                   'Get Config'
                 )}
-              </Button>
-            </div>
+            </Button>
           </div>
+        </div>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
   )
 } 
