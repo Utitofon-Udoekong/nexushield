@@ -10,9 +10,8 @@ import { useState } from "react"
 export default function ExtensionPage() {
   const [selectedOs, setSelectedOs] = useState('windows')
 
-  const handleDownload = (type: 'crx' | 'windows' | 'linux') => {
+  const handleDownload = (type: 'windows' | 'linux') => {
     const urls = {
-      crx: '/api/extension/download',
       windows: '/api/extension/download/windows',
       linux: '/api/extension/download/linux'
     }
@@ -35,19 +34,14 @@ export default function ExtensionPage() {
             Generate, manage, and connect with just a few clicks.
           </p>
         </div>
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" className="space-x-2" onClick={() => handleDownload('windows')}>
-              <Icon icon="mdi:microsoft-windows" className="h-5 w-5" />
-              <span>Download for Windows</span>
-            </Button>
-            <Button size="lg" variant="outline" className="space-x-2" onClick={() => handleDownload('linux')}>
-              <Icon icon="mdi:linux" className="h-5 w-5" />
-              <span>Download for Linux</span>
-            </Button>
-          </div>
-          <Button variant="link" className="text-sm" onClick={() => handleDownload('crx')}>
-            Download .crx file directly
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Button size="lg" className="space-x-2" onClick={() => handleDownload('windows')}>
+            <Icon icon="mdi:microsoft-windows" className="h-5 w-5" />
+            <span>Download for Windows</span>
+          </Button>
+          <Button size="lg" variant="outline" className="space-x-2" onClick={() => handleDownload('linux')}>
+            <Icon icon="mdi:linux" className="h-5 w-5" />
+            <span>Download for Linux</span>
           </Button>
         </div>
       </section>
@@ -144,43 +138,80 @@ export default function ExtensionPage() {
                       <div className="absolute left-8 top-[50px] bottom-0 w-px bg-border/50 -z-10" />
                       {[
                         {
-                          title: "Download the Extension",
-                          icon: "mdi:download",
+                          title: "Download and Extract Files",
+                          icon: "mdi:folder-zip",
                           steps: [
-                            'Click the "Download for Windows" button above to download the extension package',
-                            'The file will be downloaded as nexushield-extension-windows.zip',
-                            'Extract the ZIP file to a location you can easily access',
-                            'You should see two files: nexushield-extension.crx and nexushield-extension.exe'
+                            'Download the zip file containing the Nexus Extension installation files',
+                            'Navigate to your Downloads folder (or wherever you saved the file)',
+                            'Right-click the zip file and select "Extract All..." or use your preferred extraction tool',
+                            'Open the extracted folder to find nexus.crx and nexus_config.exe'
                           ]
                         },
                         {
-                          title: "Install Configuration Profile",
+                          title: "Install Nexus Configuration",
                           icon: "mdi:cog",
                           steps: [
-                            'Double-click the nexushield-extension.exe file',
-                            'If prompted, allow the application to make changes (administrator privileges required)',
-                            'This will install the configuration profile silently in the background',
-                            'The configuration allows the extension to be automatically trusted via system policy'
+                            'In the extracted folder, right-click on nexus_config.exe and select "Run as administrator"',
+                            'If a User Account Control prompt appears, click "Yes" to allow the program to make changes',
+                            'Read the Terms and Conditions presented, then click "Yes" to continue',
+                            'Wait for the configuration to complete. You\'ll see a success message when finished'
+                          ],
+                          note: {
+                            title: "Optional Verification",
+                            sections: [
+                              {
+                                title: "Using Registry Editor",
+                                steps: [
+                                  'Press Win+R, type regedit and press Enter',
+                                  'Navigate to HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Google\\Chrome\\ExtensionInstallAllowlist',
+                                  'You should see your Nexus Extension ID listed'
+                                ]
+                              },
+                              {
+                                title: "Using Browser Policy Page",
+                                content: [
+                                  'For Chrome: Enter chrome://policy/ in the address bar',
+                                  'For Brave: Enter brave://policy/ in the address bar',
+                                  'For Edge: Enter edge://policy/ in the address bar',
+                                  'Look for "ExtensionInstallAllowlist" and confirm your extension ID is listed'
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          title: "Restart Your Browser",
+                          icon: "mdi:refresh",
+                          steps: [
+                            'Close and reopen your browser completely to apply the new settings'
                           ]
                         },
                         {
-                          title: "Install the Extension",
+                          title: "Install the Nexus Extension",
                           icon: "mdi:extension",
                           steps: [
-                            'Open Chrome browser',
-                            'Go to "Extensions" (or type chrome://extensions in the address bar)',
-                            'Enable Developer mode in the top-right corner',
-                            'Drag and drop the nexushield-extension.crx file into the browser window',
+                            {
+                              text: 'Open your browser\'s extension management page:',
+                              list: [
+                                'Chrome: chrome://extensions/',
+                                'Brave: brave://extensions/',
+                                'Edge: edge://extensions/'
+                              ]
+                            },
+                            'Enable Developer mode by toggling the switch in the top-right corner',
+                            'Refresh the page',
+                            'Locate the nexus.crx file you extracted earlier',
+                            'Drag and drop the file directly into the extensions page',
                             'Click "Add Extension" when prompted'
                           ]
                         },
                         {
-                          title: "Pin the Extension",
+                          title: "Pin and Use the Extension",
                           icon: "mdi:pin",
                           steps: [
-                            'Click the puzzle piece icon (Extensions) in the Chrome toolbar',
-                            'Find "NexusShield VPN" in the list',
-                            'Click the pin icon to keep it visible in your toolbar'
+                            'Click the puzzle piece icon in your browser toolbar',
+                            'Find the Nexus Extension and click the pin icon to keep it visible',
+                            'The extension icon will now appear on your toolbar for easy access'
                           ]
                         }
                       ].map((section, index) => (
@@ -199,10 +230,45 @@ export default function ExtensionPage() {
                                     <span className="flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-medium shrink-0">
                                       {stepIndex + 1}
                                     </span>
-                                    <span className="pt-0.5">{step}</span>
+                                    <div className="pt-0.5 space-y-2">
+                                      {typeof step === 'string' ? (
+                                        step
+                                      ) : (
+                                        <>
+                                          <p>{step.text}</p>
+                                          {step.list && (
+                                            <ul className="ml-4 space-y-1 text-sm">
+                                              {step.list.map((item, i) => (
+                                                <li key={i} className="list-disc">{item}</li>
+                                              ))}
+                                            </ul>
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
                                   </li>
                                 ))}
                               </ol>
+                              {section.note && (
+                                <div className="mt-4 p-4 bg-muted rounded-lg">
+                                  <h4 className="font-medium mb-3">{section.note.title}</h4>
+                                  <div className="space-y-4">
+                                    {section.note.sections.map((noteSection, i) => (
+                                      <div key={i}>
+                                        <h5 className="font-medium text-sm mb-2">{noteSection.title}</h5>
+                                        <ul className="space-y-1 text-sm text-muted-foreground">
+                                          {(noteSection.steps || noteSection.content).map((item, j) => (
+                                            <li key={j} className="flex items-start gap-2">
+                                              <Icon icon="mdi:chevron-right" className="w-4 h-4 shrink-0 mt-0.5" />
+                                              {item}
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -212,29 +278,14 @@ export default function ExtensionPage() {
                     <Card className="bg-muted/50">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                          <Icon icon="mdi:alert-circle" className="w-5 h-5 text-yellow-500" />
-                          Troubleshooting
+                          <Icon icon="mdi:help-circle" className="w-5 h-5 text-primary" />
+                          Need Help?
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <ul className="space-y-3 text-muted-foreground">
-                          <li className="flex items-start gap-2">
-                            <Icon icon="mdi:chevron-right" className="w-5 h-5 shrink-0 mt-0.5" />
-                            If you see a "Manifest version 2 is deprecated" warning, you can safely ignore it
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <Icon icon="mdi:chevron-right" className="w-5 h-5 shrink-0 mt-0.5" />
-                            If the extension doesn't appear after installation, try refreshing the extensions page
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <Icon icon="mdi:chevron-right" className="w-5 h-5 shrink-0 mt-0.5" />
-                            Make sure you ran the .exe file before trying to install the extension
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <Icon icon="mdi:chevron-right" className="w-5 h-5 shrink-0 mt-0.5" />
-                            If you get an error, try closing and reopening your browser
-                          </li>
-                        </ul>
+                        <p className="text-muted-foreground">
+                          If you encounter any issues during installation, please contact our support team.
+                        </p>
                       </CardContent>
                     </Card>
                   </div>
@@ -309,7 +360,6 @@ export default function ExtensionPage() {
                                       ) : (
                                         <>
                                           <p>{step.text}</p>
-                                          <pre className="bg-muted p-2 rounded-md text-sm"><code>{step.code}</code></pre>
                                           {step.note && (
                                             <p className="text-sm text-muted-foreground/80">{step.note}</p>
                                           )}

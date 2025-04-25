@@ -49,7 +49,7 @@ export default function Home() {
             </Card>
             <Card>
               <CardHeader>
-                <Icon icon="mdi:speed-meter" className="h-12 w-12 text-primary" />
+                <Icon icon="material-symbols-light:speed-outline" className="h-12 w-12 text-primary" />
                 <CardTitle>Network Insights</CardTitle>
                 <CardDescription>
                   Monitor your connection with real-time speed tests, including download/upload speeds, ping, and packet loss measurements.
