@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusShield VPN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>NexusShield VPN</h1>
+      <p>Get your VPN configuration</p>
+    </div>
+    <div class="config-section">
+      <div class="form-group">
+        <label for="country-select">Location:</label>
+        <select id="country-select" class="select-input">
+          <option value="any">Any Location</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lease-time">Lease Duration (minutes):</label>
+        <input type="number" id="lease-time" class="number-input" value="30" min="0.5" step="0.5">
+      </div>
+      <button id="get-config" class="primary-button">Get Configuration</button>
+    </div>
+    <div id="config-display" class="config-display" style="display: none;">
+      <h3>Your Wireguard Configuration</h3>
+      <div class="expiry-info">
+        <span>Expires in: </span>
+        <span id="expiry-time"></span>
+      </div>
+      <div class="qr-code-container">
+        <div>
+          <div id="qr-code"></div>
+          <div class="qr-code-label">Scan to import configuration</div>
+        </div>
+      </div>
+      <pre id="config-text" class="config-text"></pre>
+      <div class="button-group">
+        <button id="download-config" class="secondary-button">Download Config</button>
+        <button id="copy-config" class="secondary-button">Copy Config</button>
+        <button id="save-config" class="secondary-button">Save Config</button>
+      </div>
+    </div>
+    <div id="saved-configs" class="saved-configs" style="display: none;">
+      <h3>Saved Configurations</h3>
+      <div id="saved-configs-list" class="saved-configs-list">
+        <!-- Saved configs will be inserted here -->
+      </div>
+    </div>
+    <div class="footer">
+      <a href="https://nexushield.vercel.app/dashboard" target="_blank" class="link">View Dashboard</a>
+    </div>
+  </div>
+  <script src="js/qrcode.js"></script>
+  <script src="js/popup.js"></script>
+</body>
+</html> 

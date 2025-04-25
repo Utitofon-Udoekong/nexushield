@@ -4,13 +4,13 @@ import { join } from 'path'
 
 export async function GET() {
   try {
-    const filePath = join(process.cwd(), 'public', 'extension', 'nexushield-extension-linux.zip')
+    const filePath = join(process.cwd(), 'public', 'extension', 'nexushield_extension_linux.zip')
     const fileBuffer = readFileSync(filePath)
     
     return new NextResponse(fileBuffer, {
       headers: {
         'Content-Type': 'application/zip',
-        'Content-Disposition': 'attachment; filename="nexushield-extension-linux.zip"'
+        'Content-Disposition': 'attachment; filename="nexushield_extension_linux.zip"'
       }
     })
   } catch (error) {

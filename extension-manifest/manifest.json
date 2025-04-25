@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "NexusShield VPN",
+  "version": "1.0.0",
+  "description": "Quick access to NexusShield VPN configuration and network monitoring",
+  "permissions": [
+    "storage",
+    "clipboardWrite",
+    "alarms",
+    "notifications"
+  ],
+  "host_permissions": [
+    "http://185.189.44.166:3000/*"
+  ],
+  "background": {
+    "service_worker": "js/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+} 
