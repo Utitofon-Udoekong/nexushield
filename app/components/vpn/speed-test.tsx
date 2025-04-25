@@ -43,7 +43,7 @@ export function SpeedTest() {
       // Run upload speed test (simulated with smaller payload)
       const uploadSpeed = downloadSpeed * 0.8 // Typically upload is slower than download
 
-      setResults({
+          setResults({
         download: downloadSpeed,
         upload: uploadSpeed,
         ping: pingTime,
@@ -116,7 +116,7 @@ export function SpeedTest() {
             </div>
           </div>
           <Button 
-            onClick={runSpeedTest} 
+            onClick={runSpeedTest}
             disabled={testing}
             className="w-full"
           >

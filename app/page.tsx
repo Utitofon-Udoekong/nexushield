@@ -27,6 +27,9 @@ export default function Home() {
           <Button size="lg" asChild>
             <Link href="/dashboard">Get Started</Link>
           </Button>
+          <Button size="lg" variant="outline" asChild>
+            <Link href="/extension">Download Extension</Link>
+          </Button>
         </div>
       </section>
 
@@ -62,6 +65,15 @@ export default function Home() {
                 </CardDescription>
               </CardHeader>
             </Card>
+            <Card>
+              <CardHeader>
+                <Icon icon="mdi:puzzle" className="h-12 w-12 text-primary" />
+                <CardTitle>Browser Extension</CardTitle>
+                <CardDescription>
+                  Quick access to VPN configurations right from your browser. Generate, manage, and scan QR codes for instant mobile setup.
+                </CardDescription>
+              </CardHeader>
+            </Card>
           </div>
         </div>
       </section>
@@ -70,10 +82,19 @@ export default function Home() {
       <section className="py-20 px-4 bg-muted/50">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-xl font-bold text-primary">1</span>
+              </div>
+              <h3 className="text-xl font-semibold">Install Extension</h3>
+              <p className="text-muted-foreground">
+                Download and install our browser extension for quick access to VPN configurations
+              </p>
+            </div>
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-xl font-bold text-primary">2</span>
               </div>
               <h3 className="text-xl font-semibold">Select Location</h3>
               <p className="text-muted-foreground">
@@ -82,7 +103,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-xl font-bold text-primary">2</span>
+                <span className="text-xl font-bold text-primary">3</span>
               </div>
               <h3 className="text-xl font-semibold">Generate Config</h3>
               <p className="text-muted-foreground">
@@ -91,7 +112,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-xl font-bold text-primary">3</span>
+                <span className="text-xl font-bold text-primary">4</span>
               </div>
               <h3 className="text-xl font-semibold">Connect</h3>
               <p className="text-muted-foreground">
