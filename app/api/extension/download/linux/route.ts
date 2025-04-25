@@ -14,7 +14,6 @@ export async function GET() {
       }
     })
   } catch (error) {
-    console.error('Error serving Linux extension file:', error)
     return new NextResponse('Extension file not found', { status: 404 })
   }
 } 

@@ -56,7 +56,6 @@ export function SpeedTest() {
         variant: "success"
       })
     } catch (error) {
-      console.error('Speed test failed:', error)
       toast({
         title: "Speed Test Failed",
         description: "There was an error measuring your network speed.",

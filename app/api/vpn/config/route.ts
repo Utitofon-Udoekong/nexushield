@@ -28,10 +28,8 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    console.log('data', data)
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching VPN config:", error);
     return NextResponse.json(
       { error: "Failed to fetch VPN configuration" },
       { status: 500 }

@@ -19,7 +19,6 @@ export async function GET() {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching countries:", error);
     return NextResponse.json({ error: "Failed to fetch countries" }, { status: 500 });
   }
 } 
