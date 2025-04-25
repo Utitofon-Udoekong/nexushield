@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/app/components/providers/theme-provider";
 import { Toaster } from "@/app/components/ui/toaster";
 import { QueryProvider } from "@/app/components/providers/query-provider";
+import { VPNProvider } from "./contexts/vpn-context";
+import { cn } from "@/app/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,16 +21,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.className)}>
         <QueryProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
-              {children}
+            <VPNProvider>
               <Toaster />
+              {children}
+            </VPNProvider>
           </ThemeProvider>
         </QueryProvider>
       </body>

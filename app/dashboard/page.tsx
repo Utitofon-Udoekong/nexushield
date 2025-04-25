@@ -14,6 +14,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/app/components/ui/alert"
 import { SpeedTest } from "@/app/components/vpn/speed-test"
 import { getVPNPreferences } from "@/app/lib/preferences"
 import { getDeviceType, getOperatingSystem, getBrowser, getCurrentIP, getLocationInfo } from "@/app/lib/utils"
+import { saveConfig, deleteConfig } from "@/app/lib/saved-configs"
+import { useVPN } from "@/app/contexts/vpn-context"
 
 interface DeviceInfo {
   type: string
@@ -28,6 +30,7 @@ interface DeviceInfo {
 }
 
 export default function DashboardPage() {
+  const { savedConfigs, refreshConfigs } = useVPN()
   const [selectedCountry, setSelectedCountry] = useState<string>()
   const [config, setConfig] = useState<string | null>(null)
   const [leaseMinutes, setLeaseMinutes] = useState(30)
@@ -36,6 +39,7 @@ export default function DashboardPage() {
   const [timeRemaining, setTimeRemaining] = useState<string>("")
   const [isGettingConfig, setIsGettingConfig] = useState(false)
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null)
+  const [blurDeviceInfo, setBlurDeviceInfo] = useState(true)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -112,16 +116,30 @@ export default function DashboardPage() {
     setShowLeaseDialog(true)
   }
 
+  const handleBlurDeviceInfo = () => {
+    setBlurDeviceInfo(!blurDeviceInfo)
+  }
+
   const handleGetConfig = async () => {
     setIsGettingConfig(true)
     try {
       const response = await fetch(`/api/vpn/config?country=${selectedCountry}&lease_minutes=${leaseMinutes}`)
       if (!response.ok) throw new Error('Failed to get config')
       const data = await response.json()
-      console.log(data)
       setConfig(data.peer_config)
       setExpiresAt(data.expires_at)
       setShowLeaseDialog(false)
+
+      // Save the new configuration
+      saveConfig({
+        peer_config: data.peer_config,
+        country: selectedCountry || "any",
+        expires_at: data.expires_at
+      })
+
+      // Update saved configs list
+      refreshConfigs()
+
       toast({
         title: "Configuration Generated",
         description: `Your VPN configuration will expire in ${leaseMinutes} minutes.`,
@@ -138,6 +156,16 @@ export default function DashboardPage() {
     }
   }
 
+  const handleDeleteConfig = (configId: string) => {
+    deleteConfig(configId)
+    refreshConfigs()
+    toast({
+      title: "Configuration Deleted",
+      description: "The configuration has been removed from your saved configurations.",
+      variant: "default",
+    })
+  }
+
   function getCountryName(countryCode: string): string {
     try {
       const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
@@ -145,11 +173,11 @@ export default function DashboardPage() {
     } catch {
       return countryCode
     }
-  } 
+  }
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto py-6">
-        <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground mt-1">Manage your VPN connection and settings</p>
@@ -163,6 +191,9 @@ export default function DashboardPage() {
             <CardDescription>
               Your current device and network details
             </CardDescription>
+            <Button variant="outline" onClick={handleBlurDeviceInfo}>
+              {blurDeviceInfo ? 'Show Device Info' : 'Hide Device Info'}
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
@@ -171,31 +202,31 @@ export default function DashboardPage() {
                   <Icon icon="mdi:devices" className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Device Type:</span>
                 </div>
-                <span className="text-sm font-medium">{deviceInfo?.type || 'Loading...'}</span>
+                <span className={`text-sm font-medium ${blurDeviceInfo ? 'blur-sm' : ''}`}>{deviceInfo?.type || 'Loading...'}</span>
 
                 <div className="flex items-center space-x-2">
                   <Icon icon="mdi:desktop-classic" className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Operating System:</span>
-            </div>
-                <span className="text-sm font-medium">{deviceInfo?.os || 'Loading...'}</span>
+                </div>
+                <span className={`text-sm font-medium ${blurDeviceInfo ? 'blur-sm' : ''}`}>{deviceInfo?.os || 'Loading...'}</span>
 
                 <div className="flex items-center space-x-2">
                   <Icon icon="mdi:web" className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Browser:</span>
-            </div>
-                <span className="text-sm font-medium">{deviceInfo?.browser || 'Loading...'}</span>
+                </div>
+                <span className={`text-sm font-medium ${blurDeviceInfo ? 'blur-sm' : ''}`}>{deviceInfo?.browser || 'Loading...'}</span>
 
                 <div className="flex items-center space-x-2">
                   <Icon icon="mdi:ip-network" className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">IP Address:</span>
-          </div>
-                <span className="text-sm font-medium">{deviceInfo?.ip || 'Loading...'}</span>
+                </div>
+                <span className={`text-sm font-medium ${blurDeviceInfo ? 'blur-sm' : ''}`}>{deviceInfo?.ip || 'Loading...'}</span>
 
                 <div className="flex items-center space-x-2">
                   <Icon icon="mdi:map-marker" className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Location:</span>
                 </div>
-                <span className="text-sm font-medium">
+                <span className={`text-sm font-medium ${blurDeviceInfo ? 'blur-sm' : ''}`}>
                   {deviceInfo?.location ? (
                     `${deviceInfo.location.city || ''} ${deviceInfo.location.region || ''}, ${deviceInfo.location.country || ''}`
                   ) : 'Loading...'}
@@ -207,21 +238,37 @@ export default function DashboardPage() {
 
         <Card className="border-0 bg-background">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl">VPN Config</CardTitle>
-            <CardDescription>
-              Select a location and generate your VPN configuration
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl">VPN Config</CardTitle>
+                <CardDescription>
+                  Select a location and generate your VPN configuration
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col space-y-4">
-              <div className="flex justify-end">
-                <div className="w-full md:w-auto">
-                  <CountrySelector
-                    onSelect={handleCountrySelect}
-                    currentCountry={selectedCountry}
-                  />
+              <div className="flex gap-x-4 w-full">
+              {savedConfigs.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.location.href = '/dashboard/configs'}
+                  className="flex items-center space-x-2"
+                >
+                  <Icon icon="mdi:folder" className="h-4 w-4" />
+                  <span>View Saved</span>
+                </Button>
+              )}
+              <div className="w-full">
+                <CountrySelector
+                  onSelect={handleCountrySelect}
+                  currentCountry={selectedCountry}
+                />
               </div>
               </div>
+
               {config && expiresAt && (
                 <div className="mt-4">
                   <Alert className="bg-amber-950/90 border-amber-900 text-amber-400 mb-4">
@@ -233,9 +280,9 @@ export default function DashboardPage() {
                       Your VPN configuration will expire in {timeRemaining}
                     </AlertDescription>
                   </Alert>
+                </div>
+              )}
             </div>
-          )}
-        </div>
           </CardContent>
         </Card>
 
@@ -261,9 +308,7 @@ export default function DashboardPage() {
         <Card className="md:col-span-2">
           <SpeedTest />
         </Card>
-
-        
-          </div>
+      </div>
 
       <Dialog open={showLeaseDialog} onOpenChange={setShowLeaseDialog}>
         <DialogContent className="sm:max-w-[425px]">
@@ -293,8 +338,8 @@ export default function DashboardPage() {
                 disabled={isGettingConfig}
               >
                 Cancel
-            </Button>
-              <Button 
+              </Button>
+              <Button
                 onClick={handleGetConfig}
                 disabled={isGettingConfig}
                 className="min-w-[120px]"
@@ -307,11 +352,11 @@ export default function DashboardPage() {
                 ) : (
                   'Get Config'
                 )}
-            </Button>
+              </Button>
+            </div>
           </div>
-        </div>
         </DialogContent>
       </Dialog>
-      </div>
+    </div>
   )
 } 

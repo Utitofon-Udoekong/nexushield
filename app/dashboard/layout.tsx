@@ -13,6 +13,7 @@ interface DashboardLayoutProps {
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: "lucide:shield" },
+  { name: "Saved Configs", href: "/dashboard/configs", icon: "mdi:folder" },
   { name: "Settings", href: "/dashboard/settings", icon: "mdi-light:settings" },
 ]
 
@@ -20,19 +21,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname()
   const router = useRouter()
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex h-screen bg-background">
       {/* Sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64">
-          <div className="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto border-r">
             <div className="flex items-center flex-shrink-0 px-4">
-              <Icon icon="mdi-light:shield" className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-              <span className="ml-2 text-xl font-semibold text-gray-900 dark:text-white">
+              <Icon icon="mdi-light:shield" className="h-8 w-8 text-primary" />
+              <span className="ml-2 text-xl font-semibold">
                 NexusShield
               </span>
             </div>
-            <div className="mt-5 flex-grow flex flex-col">
-              <nav className="flex-1 px-2 space-y-1">
+            <div className="mt-8 flex-grow flex flex-col">
+              <nav className="flex-1 px-2 space-y-2">
                 {navigation.map((item) => {
                   const isActive = pathname === item.href
                   return (
@@ -40,10 +41,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       key={item.name}
                       href={item.href}
                       className={cn(
-                        "group flex items-center px-2 py-2 text-sm font-medium rounded-md",
+                        "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
                         isActive
-                          ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-300"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       )}
                     >
                       <Icon
@@ -51,8 +52,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         className={cn(
                           "mr-3 h-5 w-5",
                           isActive
-                            ? "text-indigo-600 dark:text-indigo-300"
-                            : "text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300"
+                            ? "text-primary"
+                            : "text-muted-foreground group-hover:text-foreground"
                         )}
                       />
                       {item.name}
@@ -61,11 +62,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 })}
               </nav>
             </div>
-            <div className="flex-shrink-0 flex border-t border-gray-200 dark:border-gray-700 p-4">
+            <div className="flex-shrink-0 flex border-t p-4">
               <Button
                 variant="ghost"
                 onClick={() => router.push("/")}
-                className="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                className="flex items-center w-full text-sm font-medium text-muted-foreground hover:text-foreground"
               >
                 <Icon icon="mdi-light:logout" className="mr-3 h-5 w-5" />
                 Back to Home
